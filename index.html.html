@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mimi Gold Collection</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#0b0b0b;color:#fff}
+header{position:sticky;top:0;background:#111;padding:15px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #d4af37}
+.logo{color:#d4af37;font-weight:bold}
+.hero{padding:80px 20px;text-align:center;background:linear-gradient(#0009,#0009),url('https://images.unsplash.com/photo-1441986300917-64674bd600d8');background-size:cover}
+.search{padding:10px;width:250px}
+.filters button,.btn{padding:10px 15px;margin:5px;background:#d4af37;border:none}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;padding:20px}
+.card{background:#181818;padding:10px;border-radius:12px}
+.card img{width:100%;height:250px;object-fit:cover}
+.cartpanel{position:fixed;right:0;top:0;width:320px;height:100%;background:#111;padding:15px;overflow:auto}
+.review{padding:20px}
+.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;padding:20px}
+.gallery div{border:1px dashed #d4af37;padding:40px;text-align:center}
+input,textarea{width:100%;padding:10px;margin:5px 0}
+section{padding:20px}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">👑 MIMI GOLD COLLECTION</div>
+<input class="search" id="search" placeholder="Search">
+</header>
+
+<div class="hero">
+<h1>Luxury Fashion For Every Generation</h1>
+</div>
+
+<section class="filters">
+<button onclick="filterCat('all')">All</button>
+<button onclick="filterCat('Men')">Men</button>
+<button onclick="filterCat('Women')">Women</button>
+<button onclick="filterCat('Kids')">Kids</button>
+</section>
+
+<div id="products" class="products"></div>
+
+<div class="cartpanel">
+<h2>Cart 🛒 <span id="count">0</span></h2>
+<div id="cartItems"></div>
+<h3>Total ₦<span id="total">0</span></h3>
+<button class="btn" onclick="checkoutWhatsApp()">WhatsApp Checkout</button>
+</div>
+
+<section>
+<h2>Reviews</h2>
+<div id="review">⭐⭐⭐⭐⭐ Amazing quality and delivery.</div>
+</section>
+
+<section>
+<h2>Instagram Gallery (@Oyeze_67)</h2>
+<div class="gallery">
+<div>Product Photo</div><div>Product Photo</div><div>Product Photo</div><div>Product Photo</div>
+</div>
+</section>
+
+<section>
+<h2>Delivery Tracking</h2>
+<input id="tracking" placeholder="Tracking Number">
+<button class="btn" onclick="trackOrder()">Track</button>
+<p id="trackResult"></p>
+</section>
+
+<section>
+<h2>Contact Us</h2>
+<input id="name" placeholder="Name">
+<input id="email" placeholder="Email">
+<textarea id="message" placeholder="Message"></textarea>
+<button class="btn" onclick="sendMessage()">Send Message</button>
+<p>Phone: 09018653469<br>Email: aselemoyeze@gmail.com</p>
+</section>
+
+<script>
+const products=[
+{id:1,name:'Luxury Senator Wear',price:45000,category:'Men',image:'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800'},
+{id:2,name:'Elegant Gown',price:38000,category:'Women',image:'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=800'},
+{id:3,name:'Kids Native Wear',price:22000,category:'Kids',image:'https://images.unsplash.com/photo-1503919545889-aef636e10ad4?w=800'}
+];
+let cart=[];
+
+function render(list){
+productsDiv=document.getElementById('products');
+productsDiv.innerHTML='';
+list.forEach(p=>productsDiv.innerHTML+=`<div class="card"><img src="${p.image}"><h3>${p.name}</h3><p>₦${p.price.toLocaleString()}</p><button class="btn" onclick="addToCart(${p.id})">Add To Cart</button></div>`);
+}
+render(products);
+
+function addToCart(id){
+let p=products.find(x=>x.id===id);
+let e=cart.find(x=>x.id===id);
+if(e)e.qty++; else cart.push({...p,qty:1});
+updateCart();
+}
+function updateCart(){
+let total=0,count=0,html='';
+cart.forEach((i,n)=>{
+total+=i.price*i.qty; count+=i.qty;
+html+=`<div>${i.name}<br><button onclick="chg(${n},-1)">-</button> ${i.qty} <button onclick="chg(${n},1)">+</button> <button onclick="delItem(${n})">Remove</button></div><hr>`;
+});
+document.getElementById('cartItems').innerHTML=html;
+document.getElementById('count').innerText=count;
+document.getElementById('total').innerText=total.toLocaleString();
+}
+function chg(i,v){cart[i].qty+=v;if(cart[i].qty<=0)cart.splice(i,1);updateCart();}
+function delItem(i){cart.splice(i,1);updateCart();}
+function filterCat(c){render(c==='all'?products:products.filter(p=>p.category===c));}
+document.getElementById('search').onkeyup=e=>render(products.filter(p=>p.name.toLowerCase().includes(e.target.value.toLowerCase())));
+
+function checkoutWhatsApp(){
+let msg='MIMI GOLD COLLECTION ORDER%0A';
+cart.forEach(i=>msg+=`${i.name} x${i.qty}%0A`);
+window.open('https://wa.me/2349018653469?text='+msg);
+}
+function sendMessage(){
+let n=name.value,e=email.value,m=message.value;
+window.open(`https://wa.me/2349018653469?text=Name:%20${n}%0AEmail:%20${e}%0AMessage:%20${m}`);
+}
+function trackOrder(){
+document.getElementById('trackResult').innerText='Tracking ID '+tracking.value+' is in transit.';
+}
+const reviews=['⭐⭐⭐⭐⭐ Amazing quality and delivery.','⭐⭐⭐⭐⭐ Luxury fashion and great service.','⭐⭐⭐⭐⭐ Highly recommended.'];
+let r=0;setInterval(()=>{r=(r+1)%reviews.length;document.getElementById('review').innerText=reviews[r]},3000);
+</script>
+</body>
+</html>
